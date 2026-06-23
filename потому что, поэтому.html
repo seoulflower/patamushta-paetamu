@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Причина или следствие?</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2235;--navy-mid:#243048;--navy-light:#2e3d58;
+  --sage:#7a9e87;--sage-bg:rgba(122,158,135,.15);--cause:#a8c4a4;
+  --terra:#c4714a;--terra-bg:rgba(196,113,74,.15);
+  --cream:#f5f0e8;--cream-dark:#ede7d9;
+  --coin:#d4a843;--coin-bg:rgba(212,168,67,.12);
+  --conn:#d4a843;
+}
+body{background:var(--navy);color:var(--cream);font-family:'Outfit',sans-serif;font-size:16px;line-height:1.6;min-height:100vh}
+
+/* HEADER */
+header{background:var(--navy-mid);border-bottom:2px solid var(--terra);padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-family:'Libre Baskerville',serif;font-size:.95rem;color:var(--cream)}
+.logo em{color:var(--terra);font-style:italic}
+.coins-badge{background:transparent;border:none;padding:0;font-size:.95rem;font-weight:600;color:var(--coin);display:flex;align-items:center;gap:.3rem}
+
+/* COIN ANIMATION */
+@keyframes coinUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(1.6)}}
+.coin-fly{position:fixed;font-size:1.4rem;animation:coinUp .9s ease-out forwards;pointer-events:none;z-index:9999}
+
+/* TABS */
+.tabs{display:flex;background:var(--navy-mid);padding:0 1.5rem;border-bottom:1px solid rgba(255,255,255,.07);overflow-x:auto}
+.tab-btn{background:none;border:none;color:rgba(245,240,232,.4);font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:500;padding:.8rem .95rem;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;letter-spacing:.05em;text-transform:uppercase}
+.tab-btn:hover{color:var(--cream)}
+.tab-btn.active{color:var(--terra);border-bottom-color:var(--terra)}
+
+/* LAYOUT */
+main{max-width:740px;margin:0 auto;padding:2rem 1.4rem 5rem}
+.panel{display:none}.panel.active{display:block}
+
+/* TYPE */
+.sec-title{font-family:'Libre Baskerville',serif;font-size:1.3rem;margin-bottom:.3rem}
+.sec-sub{font-size:.84rem;color:var(--sage);font-weight:300;margin-bottom:1.5rem;line-height:1.5}
+hr.div{border:none;border-top:1px solid rgba(255,255,255,.07);margin:1.5rem 0}
+
+/* CARD */
+.card{background:var(--navy-mid);border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:1rem;border:1px solid rgba(255,255,255,.06)}
+.card-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--terra);font-weight:600;margin-bottom:.5rem}
+
+/* RULE */
+.rule{background:var(--sage-bg);border-left:3px solid var(--sage);border-radius:0 8px 8px 0;padding:.9rem 1.1rem;margin-bottom:1.4rem;font-size:.88rem;line-height:1.8}
+.rule strong{color:var(--terra)}
+
+/* HOME */
+.home-wrap{text-align:center;padding:2rem 0 1rem}
+.home-title{font-family:'Libre Baskerville',serif;font-size:1.9rem;line-height:1.3;margin-bottom:.5rem}
+.ht-because{color:var(--sage)}
+.ht-arrow{color:rgba(255,255,255,.25);font-size:1.2rem;margin:0 .4rem}
+.ht-therefore{color:var(--terra)}
+.home-sub{font-size:.97rem;color:var(--cream-dark);margin-bottom:2rem}
+.home-cards{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;max-width:480px;margin:0 auto 1.8rem}
+@media(max-width:460px){.home-cards{grid-template-columns:1fr}}
+.hc{border-radius:10px;padding:1.1rem;text-align:center}
+.hc-because{background:var(--sage-bg);border:1px solid var(--sage)}
+.hc-therefore{background:var(--terra-bg);border:1px solid var(--terra)}
+.hc-word{font-family:'Libre Baskerville',serif;font-size:1.05rem;font-weight:700;margin-bottom:.3rem}
+.hc-because .hc-word{color:var(--sage)}
+.hc-therefore .hc-word{color:var(--terra)}
+.hc-desc{font-size:.8rem;color:rgba(255,255,255,.55)}
+
+/* SLIDER */
+.slider-wrap{background:var(--navy-mid);border-radius:12px;padding:1.4rem 1.5rem;margin-bottom:1.4rem;border:1px solid rgba(255,255,255,.08)}
+.slider-sentence{font-family:'Libre Baskerville',serif;font-size:1.02rem;text-align:center;min-height:2.2rem;margin-bottom:1.1rem;line-height:1.6;transition:opacity .15s}
+.s-neutral{color:var(--cream)}
+.s-conn{color:var(--cream);font-weight:700}
+.s-cause{color:var(--cause)}
+.s-effect{color:var(--terra)}
+input[type=range].myslider{-webkit-appearance:none;width:100%;height:4px;background:rgba(255,255,255,.1);border-radius:2px;outline:none}
+input[type=range].myslider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--terra);cursor:pointer;border:2px solid rgba(255,255,255,.6);transition:background .2s}
+input[type=range].myslider:hover::-webkit-slider-thumb{background:var(--sage)}
+.slider-labs{display:flex;justify-content:space-between;margin-top:.55rem;font-size:.72rem;color:rgba(255,255,255,.35)}
+
+/* SCHEMA */
+.schema-box{background:var(--navy-light);border-radius:8px;padding:1.2rem 1.5rem;margin-bottom:1rem}
+.schema-row{font-size:.97rem;line-height:2.2}
+.schema-row + .schema-row{border-top:1px solid rgba(255,255,255,.06);padding-top:.6rem;margin-top:.4rem}
+.legend{display:flex;gap:1.2rem;flex-wrap:wrap;font-size:.78rem;color:rgba(255,255,255,.55);margin-top:.8rem}
+.ld{display:flex;align-items:center;gap:.35rem}
+.ld-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* SENTENCE ROW */
+.sent-row{background:var(--navy-mid);border-radius:10px;padding:1.1rem 1.3rem;margin-bottom:.8rem;border:1px solid rgba(255,255,255,.06);transition:border-color .2s}
+.sent-row.s-ok{border-color:var(--sage)}
+.sent-row.s-err{border-color:var(--terra)}
+.sent-text{font-size:.96rem;line-height:1.7;margin-bottom:.6rem}
+.blank{color:var(--terra);font-weight:600}
+.filled-bc{color:var(--cause);font-weight:700}
+.filled-pt{color:var(--terra);font-weight:700}
+.choice-btns{display:flex;gap:.55rem;flex-wrap:wrap}
+.cbtn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:20px;color:var(--cream);font-family:'Outfit',sans-serif;font-size:.84rem;padding:.36rem .95rem;cursor:pointer;transition:all .15s}
+.cbtn:hover:not(:disabled){background:rgba(255,255,255,.12);border-color:var(--sage)}
+.cbtn:disabled{cursor:default}
+.cbtn.c-ok{background:rgba(122,158,135,.2);border-color:var(--sage);color:#9fdcb4}
+.cbtn.c-err{background:var(--terra-bg);border-color:var(--terra);color:#efa0a0}
+.cbtn.c-show{background:rgba(122,158,135,.1);border-color:var(--sage);opacity:.55}
+.fb{font-size:.78rem;margin-top:.38rem;min-height:1em;font-style:italic}
+.fb.ok{color:#9fdcb4}.fb.err{color:#efa0a0}
+
+/* ERROR */
+.wrong-w{color:#efa0a0;background:var(--terra-bg);padding:0 .3rem;border-radius:3px;font-weight:600}
+.right-w{color:#9fdcb4;background:rgba(122,158,135,.2);padding:0 .3rem;border-radius:3px;font-weight:600}
+
+/* REFORM */
+textarea.rta{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11);border-radius:6px;color:var(--cream);font-family:'Outfit',sans-serif;font-size:.88rem;padding:.6rem .85rem;resize:none;height:56px;outline:none;transition:border-color .2s;margin-bottom:.45rem}
+textarea.rta:focus{border-color:var(--sage)}
+.reveal-ans{display:none;background:var(--sage-bg);border-radius:6px;padding:.55rem .85rem;font-size:.87rem;color:#9fdcb4;margin-top:.2rem;line-height:1.5}
+.reveal-ans.vis{display:block}
+.orig-s{font-size:.92rem;color:var(--cream-dark);font-style:italic;margin-bottom:.55rem}
+
+/* DIALOG */
+.dlg-q{font-family:'Libre Baskerville',serif;font-style:italic;font-size:.98rem;border-left:2px solid var(--terra);padding-left:.8rem;margin-bottom:.8rem}
+.dlg-prompt{font-size:.79rem;color:rgba(255,255,255,.38);margin-bottom:.25rem}
+.dlg-ex{display:none;background:var(--navy-light);border-radius:6px;padding:.65rem .85rem;font-size:.86rem;color:var(--cream-dark);margin-top:.5rem;line-height:1.6}
+.dlg-ex.vis{display:block}
+.dlg-progress{text-align:center;font-size:.8rem;color:var(--sage);margin:-.5rem 0 1rem;font-weight:500}
+
+/* BUTTONS */
+.btn{background:var(--terra);border:none;border-radius:6px;color:var(--cream);font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;padding:.52rem 1.25rem;cursor:pointer;transition:opacity .2s;letter-spacing:.03em}
+.btn:hover{opacity:.85}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.17);color:var(--cream)}
+.btn-sage{background:var(--sage);color:var(--navy)}
+.btn-sm{padding:.32rem .85rem;font-size:.78rem}
+
+/* SCORE */
+.score-hero{text-align:center;padding:1.5rem 0 .5rem}
+.score-num{font-family:'Libre Baskerville',serif;font-size:4.5rem;color:var(--coin);line-height:1}
+.score-den{font-family:'Libre Baskerville',serif;font-size:2rem;color:rgba(212,168,67,.5)}
+.score-lbl{font-size:.83rem;color:var(--sage);margin-top:.3rem;margin-bottom:1.2rem}
+.score-msg{background:var(--coin-bg);border:1px solid var(--coin);border-radius:10px;padding:1rem 1.4rem;font-family:'Libre Baskerville',serif;font-style:italic;font-size:1rem;color:var(--coin);text-align:center;margin-bottom:1.2rem}
+.err-box{background:var(--navy-mid);border-radius:8px;padding:1rem 1.2rem;font-size:.85rem;line-height:1.8;color:var(--cream-dark)}
+.err-box .err-line{color:#efa0a0}
+.err-box .ok-line{color:#9fdcb4}
+
+/* PROGRESS */
+.prog{height:3px;background:rgba(255,255,255,.07);border-radius:2px;margin-bottom:1.4rem;overflow:hidden}
+.prog-f{height:100%;background:var(--terra);border-radius:2px;transition:width .4s ease}
+
+/* SCORE MINI */
+.blk-summary{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.2rem}
+@media(max-width:440px){.blk-summary{grid-template-columns:1fr}}
+.blk-item{background:var(--navy-mid);border-radius:8px;padding:.8rem 1rem;text-align:center;border:1px solid rgba(255,255,255,.06)}
+.blk-n{font-family:'Libre Baskerville',serif;font-size:1.6rem;color:var(--terra)}
+.blk-n.done{color:var(--coin)}
+.blk-l{font-size:.73rem;color:var(--sage);margin-top:.2rem}
+
+/* TILES */
+.tile-container{display:flex;flex-wrap:wrap;gap:.5rem;margin:.8rem 0;min-height:3rem}
+.tile{background:var(--navy-light);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.4rem .8rem;font-size:.9rem;color:var(--cream);cursor:pointer;transition:all .15s;user-select:none}
+.tile:hover{background:var(--terra);border-color:var(--terra);color:#fff}
+.tile.selected{background:var(--terra);border-color:var(--terra);color:#fff}
+.tile.disabled{opacity:.3;pointer-events:none}
+.build-area{background:rgba(255,255,255,.05);border-radius:8px;padding:.6rem .9rem;min-height:2.8rem;font-size:.95rem;color:var(--cream);display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.6rem}
+.build-word{background:rgba(255,255,255,.08);padding:.2rem .7rem;border-radius:4px;font-size:.95rem}
+.build-word .remove-tile{color:var(--terra);cursor:pointer;margin-left:.3rem;font-weight:700}
+.build-word .remove-tile:hover{color:#efa0a0}
+.error-hint{font-size:.78rem;color:var(--cream-dark);margin-top:.3rem;min-height:1.2em}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Причина <em>или</em> следствие?</div>
+  <div class="coins-badge">💰 <span id="coinCount">0</span> / 30</div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('p-home',this)">Главная</button>
+  <button class="tab-btn" onclick="showTab('p-rule',this)">Правило</button>
+  <button class="tab-btn" onclick="showTab('p-choice',this)">Выбор</button>
+  <button class="tab-btn" onclick="showTab('p-error',this)">Ошибка</button>
+  <button class="tab-btn" onclick="showTab('p-reform',this)">Переформулировка</button>
+  <button class="tab-btn" onclick="showTab('p-dialogs',this)">Диалоги</button>
+  <button class="tab-btn" onclick="showTab('p-score',this)">Итог 💰</button>
+</div>
+
+<main>
+
+<!-- HOME -->
+<div class="panel active" id="p-home">
+  <div class="home-wrap">
+    <h1 class="home-title">
+      <span class="ht-because">Причина</span>
+      <span class="ht-arrow">или</span>
+      <span class="ht-therefore">следствие?</span>
+    </h1>
+    <div class="home-sub">потому что → поэтому</div>
+    <p style="font-size:.9rem;color:var(--cream-dark);margin-bottom:2rem;max-width:400px;margin-left:auto;margin-right:auto">
+      Выбери правильный союз в каждом задании, собери предложения и заработай монетки 💰
+    </p>
+    <div style="text-align:center">
+      <button class="btn btn-sage" onclick="showTab('p-rule', document.querySelectorAll('.tab-btn')[1])">Изучить правило →</button>
+    </div>
+  </div>
+</div>
+
+<!-- RULE -->
+<div class="panel" id="p-rule">
+  <h2 class="sec-title">Правило</h2>
+  <p class="sec-sub">Одна идея — два способа сказать</p>
+
+  <div class="rule">
+    <strong>ПОТОМУ ЧТО</strong> = причина — говорим, <em>почему</em> что-то происходит<br>
+    <strong>ПОЭТОМУ</strong> = следствие — говорим о <em>результате</em>
+  </div>
+
+  <div class="slider-wrap">
+    <div class="card-label">Подвигай ползунок — посмотри как меняется смысл</div>
+    <div class="slider-sentence" id="ruleSliderSent"></div>
+    <input type="range" class="myslider" min="0" max="100" value="0" id="ruleSlider" oninput="updateSlider('ruleSliderSent', this.value)">
+    <div class="slider-labs"><span>← ПОЭТОМУ (результат)</span><span>ПОТОМУ ЧТО (причина) →</span></div>
+  </div>
+
+  <div class="schema-box">
+    <div class="card-label" style="margin-bottom:.7rem">Визуальная схема</div>
+    <div class="schema-row">
+      <span class="s-effect">Я не могу войти в почту, </span><span class="s-conn">ПОЭТОМУ </span><span class="s-cause">я забыл пароль.</span>
+    </div>
+    <div class="schema-row">
+      <span class="s-cause">Я забыл пароль, </span><span class="s-conn">ПОТОМУ ЧТО </span><span class="s-effect">я не могу войти в почту.</span>
+    </div>
+    <div class="legend">
+      <div class="ld"><div class="ld-dot" style="background:var(--cause)"></div>причина (почему)</div>
+      <div class="ld"><div class="ld-dot" style="background:var(--terra)"></div>результат</div>
+    </div>
+  </div>
+
+  <div class="rule" style="margin-top:.5rem">
+    <strong>Запомни:</strong> &nbsp;<span style="color:var(--sage)">потому что</span> — причина стоит <em>после</em> союза. &nbsp;<span style="color:var(--terra)">Поэтому</span> — результат стоит <em>после</em> союза.
+  </div>
+</div>
+
+<!-- ВЫБОР -->
+<div class="panel" id="p-choice">
+  <h2 class="sec-title">Задание 1 — Выбор</h2>
+  <p class="sec-sub">Выбери правильный союз. 8 предложений — 8 монеток.</p>
+  <div class="prog"><div class="prog-f" id="choiceProg" style="width:0%"></div></div>
+  <div id="choiceEx"></div>
+  <div id="choiceSummary" style="display:none" class="card" style="margin-top:.5rem"></div>
+</div>
+
+<!-- ОШИБКА -->
+<div class="panel" id="p-error">
+  <h2 class="sec-title">Задание 2 — Исправь ошибку</h2>
+  <p class="sec-sub">Собери правильное предложение из слов. Нажми «Проверить».</p>
+  <div class="prog"><div class="prog-f" id="errorProg" style="width:0%"></div></div>
+  <div id="errorEx"></div>
+  <div id="errorSummary" style="display:none" class="card"></div>
+</div>
+
+<!-- ПЕРЕФОРМУЛИРОВКА -->
+<div class="panel" id="p-reform">
+  <h2 class="sec-title">Задание 3 — Переформулировка</h2>
+  <p class="sec-sub">Перепиши предложение с другим союзом. Порядок частей меняется! По 1 монетке за каждый раскрытый ответ.</p>
+  <div id="reformEx"></div>
+</div>
+
+<!-- ДИАЛОГИ -->
+<div class="panel" id="p-dialogs">
+  <h2 class="sec-title">Задание 4 — Мини-диалоги</h2>
+  <p class="sec-sub">Карточки-ситуации. Нажми «Следующая», чтобы увидеть новую.</p>
+  <div class="dlg-progress" id="dlgProgress">0 / 5 диалогов завершено</div>
+  <div id="dialogEx"></div>
+</div>
+
+<!-- ИТОГ -->
+<div class="panel" id="p-score">
+  <h2 class="sec-title">Итог</h2>
+  <p class="sec-sub">Твои результаты за урок</p>
+
+  <div class="score-hero">
+    <div><span class="score-num" id="finalCoins">0</span><span class="score-den"> / 30</span></div>
+    <div class="score-lbl">💰 монеток заработано</div>
+  </div>
+
+  <div class="score-msg" id="scoreMsg">Заполни упражнения — увидишь результат!</div>
+
+  <div class="blk-summary">
+    <div class="blk-item"><div class="blk-n" id="bs1">—</div><div class="blk-l">Выбор (макс. 8)</div></div>
+    <div class="blk-item"><div class="blk-n" id="bs2">—</div><div class="blk-l">Ошибка (макс. 7)</div></div>
+    <div class="blk-item"><div class="blk-n" id="bs3">—</div><div class="blk-l">Переформулировка (макс. 7)</div></div>
+    <div class="blk-item"><div class="blk-n" id="bs4">—</div><div class="blk-l">Диалоги (макс. 8)</div></div>
+  </div>
+
+  <div class="err-box" id="errDetail">
+    <em style="color:rgba(255,255,255,.35)">Здесь появятся детали после выполнения заданий.</em>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ============================
+//  GLOBAL STATE
+// ============================
+let coins = 0;
+const errorsChoice = [];   // wrong indices in choice block
+const errorsError  = [];   // wrong indices in error block
+let reformDone = 0;
+let dialogDone = 0;
+let dialogBonusGiven = false;
+const blkPts = {b1:0, b2:0, b3:0, b4:0};
+
+function addCoins(n) {
+  coins = Math.min(30, coins + n);
+  document.getElementById('coinCount').textContent = coins;
+  const el = document.createElement('div');
+  el.className = 'coin-fly';
+  el.textContent = n > 1 ? '💰×'+n : '💰';
+  el.style.right = '1.5rem';
+  el.style.top = '3.5rem';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 950);
+}
+
+function showTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'p-score') renderScore();
+}
+
+// ============================
+//  SLIDER
+// ============================
+const sliderStates = {
+  therefore: `<span class="s-neutral">Я не спал ночью, </span><span class="s-conn">ПОЭТОМУ</span><span class="s-neutral"> я хочу спать днём.</span>`,
+  because:   `<span class="s-neutral">Я хочу спать днём, </span><span class="s-conn">ПОТОМУ ЧТО</span><span class="s-neutral"> я не спал ночью.</span>`
+};
+
+function updateSlider(elId, val) {
+  const el = document.getElementById(elId);
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.innerHTML = parseFloat(val) < 50 ? sliderStates.therefore : sliderStates.because;
+    el.style.opacity = '1';
+  }, 120);
+}
+
+document.getElementById('ruleSliderSent').innerHTML = sliderStates.therefore;
+
+// ============================
+//  BLOCK 1 — ВЫБОР (перемешаны)
+// ============================
+const choiceDataRaw = [
+  { text: "Мы не купили алкоголь, ___, в России нельзя покупать алкоголь после 22:00.", ans: "потому что" },
+  { text: "Я не пошёл в спортзал, ___ я ленивый и хочу лежать на диване.", ans: "потому что" },
+  { text: "Он забыл телефон, ___ он не мог позвонить.", ans: "поэтому" },
+  { text: "Я не взял зонт, ___ на улице солнце и жара.", ans: "потому что" },
+  { text: "Она не выучила текст, ___ она не смогла перевести.", ans: "поэтому" },
+  { text: "Я купил лотерейный билет, ___ теперь жду миллион евро. 😄", ans: "поэтому" },
+  { text: "Он сказал «да», ___ теперь он женат. 😄", ans: "поэтому" },
+  { text: "Я забыл телефон, ___ я вернулся домой. 😬", ans: "поэтому" },
+];
+
+// Перемешиваем
+let choiceData = choiceDataRaw.slice().sort(() => Math.random() - 0.5);
+
+let choiceAnswered = 0;
+function buildChoice() {
+  const c = document.getElementById('choiceEx');
+  c.innerHTML = choiceData.map((item, i) => `
+    <div class="sent-row" id="cr${i}">
+      <div class="sent-text" id="ct${i}">${i+1}. ${item.text.replace('___', '<span class="blank" id="cb${i}">___</span>')}</div>
+      <div class="choice-btns">
+        <button class="cbtn" onclick="pickChoice(${i},'потому что')" id="cc${i}bc">потому что</button>
+        <button class="cbtn" onclick="pickChoice(${i},'поэтому')" id="cc${i}pt">поэтому</button>
+      </div>
+      <div class="fb" id="cf${i}"></div>
+    </div>`).join('');
+}
+
+function pickChoice(i, val) {
+  const item = choiceData[i];
+  ['потому что','поэтому'].forEach(o => {
+    const key = 'cc'+i+(o==='потому что'?'bc':'pt');
+    const b = document.getElementById(key);
+    b.disabled = true;
+    if (o === item.ans) b.classList.add('c-show');
+  });
+  const selKey = 'cc'+i+(val==='потому что'?'bc':'pt');
+  const sel = document.getElementById(selKey);
+  const fb  = document.getElementById('cf'+i);
+  const row = document.getElementById('cr'+i);
+  const sentEl = document.getElementById('ct'+i);
+  if (val === item.ans) {
+    sel.classList.add('c-ok'); row.classList.add('s-ok');
+    fb.className = 'fb ok'; fb.textContent = '✓';
+    const cls = val === 'потому что' ? 'filled-bc' : 'filled-pt';
+    sentEl.innerHTML = (i+1)+'. '+item.text.replace('___', `<span class="${cls}">${val}</span>`);
+    blkPts.b1++;
+    addCoins(1);
+    if (!errorsChoice.includes(i+'!')) errorsChoice.push('ok'+i);
+  } else {
+    sel.classList.add('c-err'); row.classList.add('s-err');
+    fb.className = 'fb err'; fb.textContent = '✗ → '+item.ans;
+    sentEl.innerHTML = (i+1)+'. '+item.text.replace('___', `<span class="filled-bc">${item.ans}</span>`);
+    errorsChoice.push(i+1);
+  }
+  choiceAnswered++;
+  document.getElementById('choiceProg').style.width = (choiceAnswered/choiceData.length*100)+'%';
+  if (choiceAnswered === choiceData.length) showChoiceSummary();
+}
+
+function showChoiceSummary() {
+  const s = document.getElementById('choiceSummary');
+  s.style.display = 'block';
+  const wrong = errorsChoice.filter(x => typeof x === 'number');
+  if (wrong.length === 0) {
+    s.innerHTML = '<div style="color:#9fdcb4;font-weight:500">🎉 Все правильно! Отлично!</div>';
+  } else {
+    s.innerHTML = `<div style="color:var(--cream-dark)">Ошибки в предложениях: <span style="color:#efa0a0">${wrong.join(', ')}</span>. Посмотри на них ещё раз.</div>`;
+  }
+}
+
+buildChoice();
+
+// ============================
+//  BLOCK 2 — ОШИБКА (строгое сравнение по порядку, только по кнопке)
+// ============================
+const errorData = [
+  { correct: "я ем сэндвич, потому что я голоден", tiles: ["я","ем","сэндвич","потому","что","я","голоден",","], wrong: "Я голоден, потому что я ем сэндвич." },
+  { correct: "он проспал, поэтому он опоздал на поезд", tiles: ["он","проспал","поэтому","он","опоздал","на","поезд",","], wrong: "Он опоздал на поезд, поэтому он проспал." },
+  { correct: "она легла спать, потому что она устала", tiles: ["она","лег","спать","потому","что","она","устала",","], wrong: "Она устала, потому что она легла спать." },
+  { correct: "у меня не было настроения, поэтому я не пошёл на свидание", tiles: ["у","меня","не","было","настроения","поэтому","я","не","пошёл","на","свидание",","], wrong: "Я не пошёл на свидание, поэтому у меня не было настроения." },
+  { correct: "я приехал вовремя, потому что я взял такси", tiles: ["я","приехал","вовремя","потому","что","я","взял","такси",","], wrong: "Я взял такси, потому что я приехал вовремя." },
+  { correct: "я начал бегать по утрам, поэтому я купил новые кроссовки", tiles: ["я","начал","бегать","по","утрам","поэтому","я","купил","новые","кроссовки",","], wrong: "Я купил новые кроссовки, поэтому я начал бегать по утрам." },
+  { correct: "он не заметил сообщение, поэтому он не ответил", tiles: ["он","не","заметил","сообщение","поэтому","он","не","ответил",","], wrong: "Он не ответил, поэтому он не заметил сообщение." },
+];
+
+let errorAnswered = 0;
+let errorIndex = 0;
+let selectedTiles = [];
+
+function buildError() {
+  const c = document.getElementById('errorEx');
+  c.innerHTML = errorData.map((item, i) => `
+    <div class="sent-row" id="errorRow${i}">
+      <div class="card-label">Неправильный вариант</div>
+      <div class="orig-s">${item.wrong}</div>
+      <div style="margin-top:.5rem;font-size:.8rem;color:var(--cream-dark)">Собери правильное предложение из плиток:</div>
+      <div class="build-area" id="buildArea${i}"></div>
+      <div class="tile-container" id="tileContainer${i}"></div>
+      <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.5rem">
+        <button class="btn btn-ghost btn-sm" onclick="checkError(${i})">Проверить</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetError(${i})">Сбросить</button>
+        <button class="btn btn-ghost btn-sm" onclick="showErrorHint(${i})">Подсказка</button>
+      </div>
+      <div class="error-hint" id="errorHint${i}"></div>
+      <div class="fb" id="errorFb${i}"></div>
+    </div>
+  `).join('');
+  // Инициализируем каждое предложение
+  for (let i = 0; i < errorData.length; i++) {
+    loadError(i);
+  }
+}
+
+function loadError(i) {
+  const item = errorData[i];
+  const shuffled = item.tiles.sort(() => Math.random() - 0.5);
+  document.getElementById('tileContainer'+i).innerHTML = shuffled.map((w, idx) =>
+    `<span class="tile" data-word="${w}" data-idx="${idx}" onclick="selectTile(this, ${i})">${w}</span>`
+  ).join('');
+  document.getElementById('buildArea'+i).innerHTML = '';
+  document.getElementById('errorHint'+i).textContent = '';
+  document.getElementById('errorFb'+i).textContent = '';
+  document.getElementById('errorRow'+i).className = 'sent-row';
+  // Храним выбранные плитки для каждого предложения отдельно
+  if (!window.selectedTilesAll) window.selectedTilesAll = {};
+  window.selectedTilesAll[i] = [];
+}
+
+function selectTile(el, i) {
+  if (el.classList.contains('disabled')) return;
+  const word = el.dataset.word;
+  el.classList.add('disabled');
+  const build = document.getElementById('buildArea'+i);
+  const span = document.createElement('span');
+  span.className = 'build-word';
+  span.innerHTML = `${word} <span class="remove-tile" onclick="removeTile(this, ${i})">✕</span>`;
+  build.appendChild(span);
+  if (!window.selectedTilesAll) window.selectedTilesAll = {};
+  if (!window.selectedTilesAll[i]) window.selectedTilesAll[i] = [];
+  window.selectedTilesAll[i].push(word);
+}
+
+function removeTile(el, i) {
+  const span = el.parentElement;
+  const word = span.textContent.replace('✕', '').trim();
+  const idx = window.selectedTilesAll[i].indexOf(word);
+  if (idx !== -1) window.selectedTilesAll[i].splice(idx, 1);
+  span.remove();
+  const tiles = document.querySelectorAll('#tileContainer'+i+' .tile');
+  for (let t of tiles) {
+    if (t.dataset.word === word && t.classList.contains('disabled')) {
+      t.classList.remove('disabled');
+      break;
+    }
+  }
+}
+
+function checkError(i) {
+  const item = errorData[i];
+  const user = window.selectedTilesAll[i] ? window.selectedTilesAll[i].join(' ') : '';
+  const fb = document.getElementById('errorFb'+i);
+  const row = document.getElementById('errorRow'+i);
+
+  // Нормализация: убираем пробелы вокруг запятой
+  const normalize = (str) => str.replace(/\s*,\s*/g, ', ').trim();
+  const userNorm = normalize(user);
+  const correctNorm = normalize(item.correct);
+
+  if (userNorm === correctNorm) {
+    fb.className = 'fb ok';
+    fb.textContent = '✓ Правильно! +1 монетка';
+    row.classList.add('s-ok');
+    blkPts.b2++;
+    addCoins(1);
+    document.querySelectorAll('#tileContainer'+i+' .tile').forEach(t => t.classList.add('disabled'));
+    errorAnswered++;
+    document.getElementById('errorProg').style.width = (errorAnswered/errorData.length*100)+'%';
+    if (errorAnswered === errorData.length) showErrorSummary();
+  } else {
+    fb.className = 'fb err';
+    fb.textContent = '✗ Попробуй ещё раз.';
+    row.classList.add('s-err');
+    setTimeout(() => row.classList.remove('s-err'), 1200);
+  }
+}
+
+function resetError(i) {
+  loadError(i);
+}
+
+function showErrorHint(i) {
+  const item = errorData[i];
+  document.getElementById('errorHint'+i).textContent = 'Подсказка: ' + item.correct;
+}
+
+function showErrorSummary() {
+  const s = document.getElementById('errorSummary');
+  s.style.display = 'block';
+  s.innerHTML = '<div style="color:#9fdcb4;font-weight:500">🎉 Все предложения собраны верно!</div>';
+}
+
+buildError();
+
+// ============================
+//  BLOCK 3 — ПЕРЕФОРМУЛИРОВКА
+// ============================
+const reformDataRaw = [
+  { orig:"У меня болит голова, поэтому я пью таблетку.", ans:"Я пью таблетку, потому что у меня болит голова.", type:"therefore" },
+  { orig:"Она не пошла на вечеринку, поэтому осталась дома.", ans:"Она осталась дома, потому что не пошла на вечеринку.", type:"therefore" },
+  { orig:"Я не купил билет, поэтому не пошёл в кино.", ans:"Я не пошёл в кино, потому что не купил билет.", type:"therefore" },
+  { orig:"У меня нет денег, поэтому я не еду в отпуск.", ans:"Я не еду в отпуск, потому что у меня нет денег.", type:"therefore" },
+  { orig:"Я не пошёл в школу, потому что я заболел.", ans:"Я заболел, поэтому я не пошёл в школу.", type:"because" },
+  { orig:"Он не позвонил, потому что забыл.", ans:"Он забыл, поэтому он не позвонил.", type:"because" },
+  { orig:"Мы опоздали на автобус, потому что вышли поздно.", ans:"Мы вышли поздно, поэтому мы опоздали на автобус.", type:"because" },
+];
+
+// Перемешиваем
+let reformData = reformDataRaw.slice().sort(() => Math.random() - 0.5);
+
+function buildReform() {
+  const c = document.getElementById('reformEx');
+  c.innerHTML = reformData.map((item, i) => `
+    <div class="sent-row" id="rr${i}">
+      <div class="card-label">Предложение ${i+1}</div>
+      <div class="orig-s">${item.orig}</div>
+      <textarea class="rta" id="rt${i}" placeholder="Перепиши с другим союзом..."></textarea>
+      <button class="btn btn-ghost btn-sm" onclick="revealReform(${i})" id="rb${i}">Показать ответ</button>
+      <div class="reveal-ans" id="ra${i}">→ ${item.ans}</div>
+    </div>`).join('');
+}
+
+function revealReform(i) {
+  document.getElementById('ra'+i).classList.add('vis');
+  document.getElementById('rb'+i).disabled = true;
+  document.getElementById('rr'+i).classList.add('s-ok');
+  reformDone++;
+  blkPts.b3++;
+  addCoins(1);
+}
+
+buildReform();
+
+// ============================
+//  BLOCK 4 — ДИАЛОГИ
+// ============================
+const dialogData = [
+  { q:"— Почему ты не пришёл на встречу?",
+    p1:"Я не пришёл на встречу, потому что ...",
+    p2:"..., поэтому я не пришёл на встречу.",
+    ex:"Я не пришёл на встречу, потому что я проспал. Я проспал, поэтому я не пришёл на встречу." },
+  { q:"— Почему ты не сделал домашнее задание?",
+    p1:"Я не сделал домашнее задание, потому что ...",
+    p2:"..., поэтому я не сделал домашнее задание.",
+    ex:"Я не сделал домашнее задание, потому что я забыл. Я забыл, поэтому я не сделал домашнее задание." },
+  { q:"— Почему ты не пошёл на тренировку?",
+    p1:"Я не пошёл на тренировку, потому что ...",
+    p2:"..., поэтому я не пошёл на тренировку.",
+    ex:"Я не пошёл на тренировку, потому что я устал. Я устал, поэтому я не пошёл на тренировку." },
+  { q:"— Почему ты купил новую куртку?",
+    p1:"Я купил новую куртку, потому что ...",
+    p2:"..., поэтому я купил новую куртку.",
+    ex:"Я купил новую куртку, потому что старая порвалась. Старая порвалась, поэтому я купил новую куртку." },
+  { q:"— Почему ты не пришёл на вечеринку?",
+    p1:"Я не пришёл на вечеринку, потому что ...",
+    p2:"..., поэтому я не пришёл на вечеринку.",
+    ex:"Я не пришёл на вечеринку, потому что я болел. Я болел, поэтому я не пришёл на вечеринку." },
+];
+
+let dialogDeck = [];
+let dialogCardIndex = 0;
+
+function shuffleDeck() {
+  dialogDeck = dialogData.map((_, i) => i);
+  for (let i = dialogDeck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [dialogDeck[i], dialogDeck[j]] = [dialogDeck[j], dialogDeck[i]];
+  }
+}
+
+function buildDialogs() {
+  shuffleDeck();
+  const c = document.getElementById('dialogEx');
+  c.innerHTML = `
+    <div class="card" id="dialogCard">
+      <div class="dlg-q" id="dlgQ"></div>
+      <div class="dlg-prompt" id="dlgP1"></div>
+      <textarea class="rta" id="dta" placeholder="Потому что..."></textarea>
+      <div class="dlg-prompt" style="margin-top:.3rem" id="dlgP2"></div>
+      <textarea class="rta" id="dtb" placeholder="Поэтому..."></textarea>
+      <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.5rem">
+        <button class="btn btn-ghost btn-sm" onclick="revealDialog()" id="db">💡 Показать пример</button>
+        <button class="btn btn-ghost btn-sm" onclick="nextDialog()">🎲 Следующая карточка</button>
+      </div>
+      <div class="dlg-ex" id="de"></div>
+    </div>
+    <div style="text-align:center;font-size:.8rem;color:var(--sage);margin-top:.5rem" id="dialogCounter">Карточка 1 из 5</div>
+  `;
+  loadDialog(0);
+}
+
+function loadDialog(idx) {
+  const realIdx = dialogDeck[idx];
+  const item = dialogData[realIdx];
+  document.getElementById('dlgQ').textContent = item.q;
+  document.getElementById('dlgP1').textContent = item.p1;
+  document.getElementById('dlgP2').textContent = item.p2;
+  document.getElementById('dta').value = '';
+  document.getElementById('dtb').value = '';
+  document.getElementById('de').classList.remove('vis');
+  document.getElementById('de').textContent = item.ex;
+  document.getElementById('db').disabled = false;
+  document.getElementById('dialogCard').style.borderColor = 'rgba(255,255,255,.06)';
+  document.getElementById('dialogCounter').textContent = `Карточка ${idx+1} из ${dialogData.length}`;
+}
+
+function revealDialog() {
+  const idx = dialogDeck[dialogCardIndex];
+  const item = dialogData[idx];
+  document.getElementById('de').textContent = item.ex;
+  document.getElementById('de').classList.add('vis');
+  document.getElementById('db').disabled = true;
+  document.getElementById('dialogCard').style.borderColor = 'var(--sage)';
+  if (!dialogData[idx].done) {
+    dialogData[idx].done = true;
+    dialogDone++;
+    blkPts.b4++;
+    addCoins(1);
+    document.getElementById('dlgProgress').textContent = dialogDone + ' / 5 диалогов завершено';
+    if (dialogDone === 5 && !dialogBonusGiven) {
+      dialogBonusGiven = true;
+      blkPts.b4 += 3;
+      addCoins(3);
+      document.getElementById('dlgProgress').textContent = '🎉 Все 5 диалогов! Бонус: +3 монетки';
+    }
+  }
+}
+
+function nextDialog() {
+  if (dialogCardIndex < dialogData.length - 1) {
+    dialogCardIndex++;
+    loadDialog(dialogCardIndex);
+  } else {
+    // уже последняя, перетасовать и начать заново
+    shuffleDeck();
+    dialogCardIndex = 0;
+    loadDialog(0);
+    document.getElementById('dialogCounter').textContent = 'Колода перемешана! Начни заново.';
+  }
+}
+
+buildDialogs();
+
+// ============================
+//  SCORE SCREEN
+// ============================
+function renderScore() {
+  document.getElementById('finalCoins').textContent = coins;
+
+  const bs = ['bs1','bs2','bs3','bs4'];
+  const pts = [blkPts.b1, blkPts.b2, blkPts.b3, blkPts.b4];
+  const max = [8, 7, 7, 8];
+  bs.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.textContent = pts[i] + ' / ' + max[i];
+    el.className = 'blk-n' + (pts[i] === max[i] ? ' done' : '');
+  });
+
+  const msg = document.getElementById('scoreMsg');
+  if (coins === 30) msg.textContent = 'Всё верно! Ты заработал все монетки! 💰';
+  else if (coins >= 20) msg.textContent = 'Неплохо, теперь у тебя полный мешок! 💰';
+  else if (coins >= 10) msg.textContent = 'Неплохо, но можно лучше!';
+  else msg.textContent = 'Давай ещё раз посмотрим правило.';
+
+  const det = document.getElementById('errDetail');
+  const wC = errorsChoice.filter(x => typeof x === 'number');
+  const wE = errorsError.filter(x => typeof x === 'number');
+  let html = '';
+  if (wC.length === 0 && wE.length === 0 && coins > 0) {
+    html = '<div class="ok-line">✓ Выбор — все правильно!<br>✓ Ошибка — все правильно!</div>';
+  } else {
+    if (wC.length > 0) html += `<div class="err-line">Выбор — ошибки в №${wC.join(', №')}. Посмотри ещё раз.</div>`;
+    else if (coins > 0) html += `<div class="ok-line">✓ Выбор — все правильно!</div>`;
+    if (wE.length > 0) html += `<div class="err-line">Ошибка — ошибки в №${wE.join(', №')}. Посмотри ещё раз.</div>`;
+    else if (coins > 0) html += `<div class="ok-line">✓ Ошибка — все правильно!</div>`;
+  }
+  html += `<div style="color:rgba(255,255,255,.45);margin-top:.5rem">Переформулировка: ${reformDone}/7 раскрыто · Диалоги: ${dialogDone}/5 завершено</div>`;
+  det.innerHTML = html || '<em style="color:rgba(255,255,255,.3)">Заполни упражнения — здесь появятся детали.</em>';
+}
+</script>
+</body>
+</html>
